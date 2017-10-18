@@ -23,15 +23,14 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Border BorderThickness="1" BorderBrush="Black" Padding="5 5 5 5">
-                    <TextBlock Text="{Binding Path=CurrentInput, Mode=OneWay}" MinHeight="20" MinWidth="120"></TextBlock>
+                    <TextBlock Text="{Binding Path=CurrentInput, Mode=OneWay}" FontSize="12" Margin="5" MinHeight="20" MinWidth="120"></TextBlock>
                 </Border>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                 <Border BorderThickness="1" BorderBrush="Black" Padding="5 5 5 5">
                     <ListView ItemsSource="{Binding Path=PredictiveWords, Mode=TwoWay}"
                               SelectedItem="{Binding SelectedPrediction,Mode=TwoWay}"
-                              MinHeight="20" MinWidth="120" FontSize="10" HorizontalAlignment="Left" VerticalAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-
+                              MinHeight="20" MaxHeight="30" Margin="5" MinWidth="120" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Top" ScrollViewer.VerticalScrollBarVisibility="Disabled">
                         <ListView.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Orientation="Horizontal"></StackPanel>
@@ -40,8 +39,23 @@
                         
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
-                                <Setter Property="FontSize" Value="10"/>
+                                <Setter Property="FontSize" Value="15"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                <Setter Property="VerticalAlignment" Value="Top"/>
                                 <Setter Property="Padding" Value="0 0 0 0"/>
+                                <Setter Property="Margin" Value="0"/>
+                                <Setter Property="Height" Value="10"/>
+                                <Setter Property="MaxHeight" Value="10"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListViewItem">
+                                            <ListViewItemPresenter FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Top" SelectedBackground="Orange"/>
+                                        </ControlTemplate>
+                                        
+                                    </Setter.Value>
+                                    
+                                </Setter>
                             </Style>
                         </ListView.ItemContainerStyle>
                     </ListView>
