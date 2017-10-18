@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+ * Author: Alberto Scicali
+ * Class that holds mappings to characters for each T9 Key
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +12,7 @@ namespace T9.Models
 {
     class T9CharacterModel
     {
+        // Holds T9 character bindings
         public static Dictionary<char, char[]> T9CharDictionary = new Dictionary<char, char[]>() {
             { '2', new char[]{'a', 'b', 'c' }},
             { '3', new char[]{'d', 'e', 'f' }},

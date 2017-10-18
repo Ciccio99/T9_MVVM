@@ -1,11 +1,14 @@
-﻿using System;
+﻿/*
+    Author: Alberto Scicali
+    Project 2 T9
+    NumberPadViewModel which controls the interactions between the UI and the model
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Threading;
 using T9.Utilities;
 using T9.Models;
 using System.Diagnostics;
@@ -54,17 +57,22 @@ namespace T9.ViewModels
         private bool _predictiveModeChecked;
         private Stopwatch _charStopWatch;
 
-        // On startup of viewModel
+        // Constructor for NumberPadViewModel, instantiates the necessary variables and properties
         public NumberPadViewModel() {
             CharButtonCommand = new VMICommand (OnCharacterPress);
             PredictiveWords = new ObservableCollection<string> ();
             _currentInput = new StringBuilder ();
             _predictiveDictionary = new PredictiveDictionaryModel ();
-            _predictiveDictionary.LoadDictionary ("Utilities\\english-words.txt");
+            _predictiveDictionary.LoadStringDictionary ("Utilities\\english-words.txt");
             _predictiveModeChecked = false;
             _charStopWatch = new Stopwatch ();
         }
 
+        /*
+            Command function for CharButtonCommand
+            Handles the interaction for each key press and for when the application is in predictive mode
+            @param Object parameter passed in by the UI, the Key character for the button in this case
+        */
         private void OnCharacterPress (object param) {
             var paramString = param as string;
             char key = paramString[0];
@@ -97,26 +105,26 @@ namespace T9.ViewModels
                     
                     break;
                 default:
-                    if (PredictiveModeChecked) {
-                        OnCharacterPredictive (key);
-                    } else {
-                        OnCharacter (key);
-                    }
+                    OnCharacter (key);
+                    if (PredictiveModeChecked)
+                        GetCurrentPredictions ();
+                   
                     break;
             }
         }
 
+        /*
+            Appends the current character and index combo in the _currentViewCharacter to the input box 
+        */
         private void AppendCurrChar() {
             char finalChar = T9CharacterModel.GetCharacter (_currentViewChar.charKey, _currentViewChar.currCharIndex);
             _currentInput.Append(finalChar);
             OnPropertyChanged("CurrentInput");
         }
 
-        private void AppendChar (char key) {
-            _currentInput.Append (T9CharacterModel.GetCharacter (key, 0));
-            OnPropertyChanged ("CurrentInput");
-        }
-
+        /*
+            Confirm the currently selected prediction word and enter into the input text block 
+        */
         private void SetSelectedWord () {
             var tokens = GetInputTokens (_currentInput.ToString ());
             var currentWord = tokens[tokens.Length - 1];
@@ -129,6 +137,10 @@ namespace T9.ViewModels
             OnPropertyChanged ("PredictiveWords");
         }
 
+        /*
+             Cycles through the current predictions and sets the selection to the next word,
+             if the selection is at the end of the prediction options then start back at the first prediction
+        */
         private void CyclePredictionSelections () {
             if (PredictiveWords.Count < 1) {
                 SelectedPrediction = null;
@@ -146,6 +158,9 @@ namespace T9.ViewModels
             OnPropertyChanged ("SelectedPrediction");
         }
 
+        /*
+            Swaps out the last inputed character in the input text block with the current ViewChar   
+        */
         private void SwapLastWithCurrChar () {
             char finalChar = T9CharacterModel.GetCharacter (_currentViewChar.charKey, _currentViewChar.currCharIndex);
 
@@ -159,8 +174,12 @@ namespace T9.ViewModels
             OnPropertyChanged("CurrentInput");
         }
 
+        
+        /*
+             Sequence of checks and functions for different stages of pressing a T9 Button
+        */        
         private void OnCharacter(char key) {
-            // If nothing has been pressed in a while or at start
+            // If the first character inputed or the current ViewChar has been nullified
             if (_currentViewChar == null) {
                 _currentViewChar = new ViewChar (key, T9CharacterModel.T9CharDictionary[key].Length);
                 AppendCurrChar ();
@@ -200,16 +219,10 @@ namespace T9.ViewModels
             _charStopWatch.Start ();
         }
 
-        private void OnCharacterPredictive (char key) {
-            if (_currentInput.Length < 2) {
-                AppendChar (key);
-                return;
-            }
-
-            AppendChar (key);
-            GetCurrentPredictions ();
-        }
-
+        /*
+         * Retrieve the current predictions available for words/prefixed of 3 characters or more,
+         * The predictions are set on a Databound variable to be pushed to the UI
+         */
         private void GetCurrentPredictions () {
             // Don't predict unless we have three letters minimum
             var tokens = GetInputTokens (_currentInput.ToString ());
@@ -221,8 +234,7 @@ namespace T9.ViewModels
             }
 
             PredictiveWords.Clear ();
-
-            var predictedWords = _predictiveDictionary.GetWordPredictions (_predictiveDictionary.EncodeString(tokens[tokens.Length - 1]));
+            var predictedWords = _predictiveDictionary.GetWordPredictions (tokens[tokens.Length - 1]);
             if (predictedWords.Count > 0) {
                 foreach (var word in predictedWords.Take (4)) {
                     PredictiveWords.Add (word);
@@ -237,10 +249,17 @@ namespace T9.ViewModels
             OnPropertyChanged ("PredictiveWords");
         }
 
+        /*
+         * Get a tokenized array of the current input string
+         */
         private string[] GetInputTokens (string input) {
             return input.ToString ().Split ((char[]) null, StringSplitOptions.RemoveEmptyEntries);
         }
 
+        /*
+         * What occurs when the Back space (#) is pressed, clears the last character in the 
+         * input box, if input box is empty than nothing
+         */
         private void OnBackspace() {
             if (_currentInput?.Length > 0) {
                 _currentInput.Remove(_currentInput.Length - 1, 1);
@@ -248,15 +267,13 @@ namespace T9.ViewModels
             }
         }
 
-
-
-        
-
-
-
-
+        // Event for property changes to be propagated to the UI
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /*
+         * Notify the UX of the specific data binding which has been updated
+         * @param name of the data binding property
+         */
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));

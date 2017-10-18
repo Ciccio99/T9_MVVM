@@ -98,13 +98,12 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Constants.cs" />
     <Compile Include="Models\PredictiveDictionaryModel.cs" />
     <Compile Include="Models\T9CharacterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\VMICommand.cs" />
     <Compile Include="ViewModels\NumberPadViewModel.cs" />
-    <Compile Include="ViewModels\ViewChar.cs" />
+    <Compile Include="Models\ViewChar.cs" />
     <Compile Include="Views\NumberPadView.xaml.cs">
       <DependentUpon>NumberPadView.xaml</DependentUpon>
     </Compile>
